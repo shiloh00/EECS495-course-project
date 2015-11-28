@@ -58,7 +58,7 @@ namespace proj
 
 	std::unordered_set<int> st;
 
-	size_t sz = 10000;
+	size_t sz = 100000;
 	size_t total = sz;
 
 	CHECK(sl.size() == 0);

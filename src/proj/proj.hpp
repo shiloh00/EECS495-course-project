@@ -27,6 +27,8 @@ namespace proj
 
 			size_t random_level();
 
+			size_t max_level;
+
 			node* level[MAX_LEVEL];
 
 		public:
@@ -57,6 +59,7 @@ namespace proj
 	template<typename K, typename V>
 	skiplist<K, V>::skiplist() {
 		memset(level, 0, sizeof(level));
+		max_level = 1;
 	}
 
 	template<typename K, typename V>
@@ -125,7 +128,7 @@ namespace proj
 			memset(ptrs, 0, sizeof(ptrs));
 		}
 
-		size_t idx = MAX_LEVEL;
+		size_t idx = max_level;
 		do {
 			idx--;
 			node* p = last ? last->ptr_list[idx] : level[idx];
@@ -146,6 +149,7 @@ namespace proj
 				res->value = *value;
 			} else {
 				size_t l = random_level();
+				max_level = max_level > l ? max_level : l;
 				node* new_node = new node(key, *value, l);
 				for(idx = 0; idx < l; idx++) {
 					if(ptrs[idx]) {
@@ -158,10 +162,13 @@ namespace proj
 			}
 		}
 		if(res && del) {
-			size_t len = res->ptr_list.size();
-			for(idx = 0; idx < len; idx++) {
+			idx = res->ptr_list.size();
+			while(idx) {
+				idx--;
 				if(ptrs[idx]) {
 					ptrs[idx]->ptr_list[idx] = res->ptr_list[idx];
+					if(!ptrs[idx] && idx + 1 == max_level && idx)
+						max_level--;
 				} else {
 					level[idx] = res->ptr_list[idx];
 				}
