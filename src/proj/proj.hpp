@@ -15,10 +15,12 @@ namespace proj
 			static const size_t MAX_LEVEL;
 
 			struct node {
+				static size_t count;
 				K key;
 				V value;
 				std::vector<node*> ptr_list;
-				node(K k, V v, size_t l) : key(k), value(v), ptr_list(l) {}
+				node(K k, V v, size_t l) : key(k), value(v), ptr_list(l) { ++count; }
+				~node() { --count; }
 			};
 
 			node* find_node_ptr(K key, bool del, bool create, V* value);
@@ -39,6 +41,8 @@ namespace proj
 
 			void remove(K key);
 
+			size_t size();
+
 			skiplist();
 
 			~skiplist();
@@ -46,6 +50,9 @@ namespace proj
 
 	template<typename K, typename V>
 	const size_t skiplist<K, V>::MAX_LEVEL = 20;
+
+	template<typename K, typename V>
+	size_t skiplist<K, V>::node::count = 0;
 
 	template<typename K, typename V>
 	skiplist<K, V>::skiplist() {
@@ -63,10 +70,16 @@ namespace proj
 	}
 
 	template<typename K, typename V>
+	size_t skiplist<K, V>::size() {
+		return skiplist<K, V>::node::count;
+	}
+
+	template<typename K, typename V>
 	void skiplist<K, V>::print() {
 		node* p = level[0];
 		while(p) {
-			std::cout << p->value << std::endl;
+			std::cout << p->key << ", " << p->value << std::endl;
+			p = p->ptr_list[0];
 		}
 	}
 
@@ -109,7 +122,7 @@ namespace proj
 		node* ptrs[MAX_LEVEL];
 
 		if(create) {
-			memset(ptrs, 0, MAX_LEVEL);
+			memset(ptrs, 0, sizeof(ptrs));
 		}
 
 		size_t idx = MAX_LEVEL;
@@ -124,7 +137,7 @@ namespace proj
 				last = p;
 				p = p->ptr_list[idx];
 			}
-			if(create && del)
+			if(create || del)
 				ptrs[idx] = last;
 		} while(idx > 0);
 
