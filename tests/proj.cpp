@@ -58,7 +58,7 @@ namespace proj
 
 	std::unordered_set<int> st;
 
-	size_t sz = 100000;
+	size_t sz = 32000;
 	size_t total = sz;
 
 	CHECK(sl.size() == 0);
@@ -73,7 +73,7 @@ namespace proj
 		CHECK(sl.get(i) == -i);
 	}
 
-	for(int i = 0; i < sz * 2; i++) {
+	for(int i = 0; i < sz * 3; i++) {
 		int key = rand() % (2 * sz);
 		CHECK(sl.size() == total);
 		std::cout << key << std::endl;
