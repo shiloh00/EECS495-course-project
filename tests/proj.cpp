@@ -76,7 +76,6 @@ namespace proj
 	for(int i = 0; i < sz * 3; i++) {
 		int key = rand() % (2 * sz);
 		CHECK(sl.size() == total);
-		std::cout << key << std::endl;
 		if(st.find(key) == st.end()) {
 			CHECK(!sl.find(key));
 			CHECK_THROW(sl.get(key), std::invalid_argument);
