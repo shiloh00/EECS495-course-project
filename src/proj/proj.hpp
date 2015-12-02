@@ -9,44 +9,66 @@
 
 namespace proj
 { 
-	template<typename K, typename V>
+	// a skiplist contains raw pointers 
+	// point to the first node of each level
+	template<typename K, typename V>		
 	class skiplist {
 		private:
+			// maximum level a skiplist can contain
 			static const size_t MAX_LEVEL;
+			
+			// the number of nodes
+			size_t count;
 
+            // a node has a key, a value, a vector of pointers pointing to 
+			// next node in each level, a count which is number of nodes  
 			struct node {
-				static size_t count;
 				K key;
 				V value;
 				std::vector<node*> ptr_list;
-				node(K k, V v, size_t l) : key(k), value(v), ptr_list(l) { ++count; }
-				~node() { --count; }
+				node(K k, V v, size_t l) : key(k), value(v), ptr_list(l) {}
+				~node() {}
 			};
 
+            // find or delete or create a node according to the flags 
 			node* find_node_ptr(K key, bool del, bool create, V* value);
-
+            
+			// return the level of created node 
 			size_t random_level();
-
+            
+			// maximum level of existing  nodes
 			size_t max_level;
-
+            
+			// raw pointer array
 			node* level[MAX_LEVEL];
 
 		public:
-
+            
+			// print out all the element of skiplist 
+			// including keys and values
 			void print();
-
+            
+			// check if the skiplist contains element key
 			bool find(K key);
-
+            
+			// add a new element node to the skiplist
 			void insert(K key, V value);
-
+            
+			// return the referrence of value
+			// corresponding to input key if found,
+			// otherwise throw an invalid_argument exception
 			V& get(K key);
-
+ 
+			// remove an element node
 			void remove(K key);
-
+            
+			// return the number of existing nodes
 			size_t size();
-
+            
+			// constructor of skiplist
 			skiplist();
-
+  
+			// destructor of skiplist 
 			~skiplist();
 	};
 
@@ -54,10 +76,7 @@ namespace proj
 	const size_t skiplist<K, V>::MAX_LEVEL = 20;
 
 	template<typename K, typename V>
-	size_t skiplist<K, V>::node::count = 0;
-
-	template<typename K, typename V>
-	skiplist<K, V>::skiplist() {
+	skiplist<K, V>::skiplist() : count(0) {
 		memset(level, 0, sizeof(level));
 		max_level = 1;
 	}
@@ -74,7 +93,7 @@ namespace proj
 
 	template<typename K, typename V>
 	size_t skiplist<K, V>::size() {
-		return skiplist<K, V>::node::count;
+		return count;
 	}
 
 	template<typename K, typename V>
@@ -151,6 +170,7 @@ namespace proj
 				size_t l = random_level();
 				max_level = max_level > l ? max_level : l;
 				node* new_node = new node(key, *value, l);
+				count++;
 				for(idx = 0; idx < l; idx++) {
 					if(ptrs[idx]) {
 						new_node->ptr_list[idx] = ptrs[idx]->ptr_list[idx];
@@ -174,6 +194,7 @@ namespace proj
 				}
 			}
 			delete res;
+			count--;
 			res = nullptr;
 		}
 
